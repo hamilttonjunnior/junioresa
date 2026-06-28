@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestão Voleibol Pro - Juniores A</title>
+    <style>
+        :root {
+            --primary: #1e3a8a;
+            --primary-light: #2563eb;
+            --accent: #f59e0b;
+            --bg: #f8fafc;
+            --surface: #ffffff;
+            --text: #0f172a;
+            --muted: #64748b;
+            --success: #10b981;
+            --danger: #ef4444;
+            --border: #e2e8f0;
+            --radius: 12px;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+        body { background: var(--bg); color: var(--text); padding-bottom: 70px; }
+
+        header { background: var(--primary); color: white; padding: 16px; text-align: center; font-weight: bold; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .sync-badge { font-size: 0.7rem; background: var(--success); color: white; padding: 2px 8px; border-radius: 10px; display: inline-block; margin-top: 4px; }
+
+        .container { max-width: 600px; margin: 0 auto; padding: 16px; }
+
+        .card { background: var(--surface); padding: 16px; border-radius: var(--radius); box-shadow: 0 1px 3px rgba(0,0,0,0.05); margin-bottom: 16px; border: 1px solid var(--border); }
+        h3 { color: var(--primary); margin-bottom: 12px; font-size: 1.1rem; border-bottom: 2px solid var(--border); padding-bottom: 6px; }
+
+        /* Form Controls */
+        .form-group { margin-bottom: 12px; }
+        label { display: block; font-size: 0.8rem; font-weight: 600; color: var(--muted); margin-bottom: 4px; }
+        input[type="text"], input[type="date"], input[type="time"], select { width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 8px; font-size: 0.9rem; background: var(--bg); color: var(--text); outline: none; }
+        input[type="text"]:focus, select:focus { border-color: var(--primary-light); background: white; }
+
+        .btn { background: var(--primary); color: white; border: none; padding: 10px 16px; border-radius: 8px; font-weight: 600; cursor: pointer; width: 100%; font-size: 0.9rem; transition: background 0.2s; }
+        .btn:hover { background: var(--primary-light); }
+        .btn-accent { background: var(--accent); color: white; }
+        .btn-accent:hover { opacity: 0.9; }
+        .btn-danger { background: var(--danger); }
+
+        /* Athlete List */
+        .athlete-card { display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px solid var(--border); }
+        .athlete-card:last-child { border-bottom: none; }
+        .athlete-num { width: 28px; height: 28px; background: var(--primary-light); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 0.85rem; }
+        .role-select { width: auto; font-size: 0.75rem; padding: 4px; margin-top: 4px; }
+
+        /* Switch toggle */
+        .switch { transform: scale(1.2); cursor: pointer; margin-right: 10px; }
+        .btn-remove { background: none; border: none; color: var(--danger); font-size: 1.3rem; cursor: pointer; font-weight: bold; }
+
+        /* Courts Layouts */
+        .set-mini-court { border: 1px solid var(--border); border-radius: var(--radius); padding: 12px; margin-bottom: 12px; background: #fafafa; }
+        .court-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; background: #16a34a; padding: 8px; border-radius: 8px; max-width: 260px; margin: 0 auto; position: relative; }
+        .court-grid::after { content: ""; position: absolute; left: 0; right: 0; top: 50%; height: 2px; background: rgba(255,255,255,0.6); }
+        .pos-box { background: rgba(255,255,255,0.9); border-radius: 6px; padding: 4px; text-align: center; display: flex; flex-direction: column; align-items: center; height: 48px; justify-content: center; box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
+        .pos-box.occupied { background: #dcfce7; border: 1px solid var(--success); }
+        .pos-box select { background: transparent; border: none; font-weight: bold; text-align: center; width: 100%; font-size: 0.85rem; padding: 0; cursor: pointer; text-align-last: center; }
+        .msg-regra { text-align: center; font-size: 0.7rem; margin-top: 6px; font-weight: 500; }
+
+        /* Live Score & Court */
+        .score-board { display: flex; justify-content: space-around; align-items: center; margin-bottom: 16px; background: var(--text); color: white; padding: 16px; border-radius: var(--radius); text-align: center; }
+        .score-num { font-size: 3rem; font-weight: 900; color: #fff; line-height: 1; margin: 8px 0; font-family: monospace; }
+        .btn-score { width: 44px; height: 44px; border-radius: 50%; border: none; font-size: 1.5rem; font-weight: bold; cursor: pointer; background: #334155; color: white; }
+        .btn-score-sub { width: 32px; height: 32px; border-radius: 50%; border: none; font-size: 1rem; cursor: pointer; background: #475569; color: white; }
+
+        .live-court { background: #15803d; border: 4px solid white; border-radius: 8px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; padding: 12px; max-width: 300px; margin: 0 auto 16px auto; position: relative; box-shadow: 0 4px 10px rgba(0,0,0,0.15); }
+        .live-court::after { content: ""; position: absolute; left: 0; right: 0; top: 50%; height: 3px; background: white; }
+        .live-pos { background: rgba(255,255,255,0.95); height: 60px; border-radius: 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 1.3rem; font-weight: bold; color: var(--text); position: relative; box-shadow: inset 0 0 6px rgba(0,0,0,0.05); }
+        .pos-label { position: absolute; top: 2px; left: 4px; font-size: 0.55rem; color: var(--muted); font-weight: 800; }
+        .server-ball { width: 12px; height: 12px; background: var(--accent); border-radius: 50%; position: absolute; bottom: 4px; right: 4px; border: 2px solid white; animation: pulse 1.5s infinite; }
+
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.2); } 100% { transform: scale(1); } }
+
+        .hint-box { background: #eff6ff; border-left: 4px solid var(--primary-light); padding: 12px; border-radius: 0 var(--radius) var(--radius) 0; font-size: 0.8rem; }
+
+        /* Navigation Bottom Bar */
+        nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--surface); display: flex; border-top: 1px solid var(--border); box-shadow: 0 -2px 10px rgba(0,0,0,0.05); z-index: 200; }
+        .nav-item { flex: 1; text-align: center; padding: 12px 0; font-size: 0.75rem; font-weight: bold; color: var(--muted); cursor: pointer; border: none; background: none; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+        .nav-item.active { color: var(--primary-light); border-top: 3px solid var(--primary-light); padding-top: 9px; }
+        .nav-icon { font-size: 1.2rem; }
+
+        .section { display: none; }
+        .section.active { display: block; }
+
+        /* Login screen overlay */
+        #login-screen { position: fixed; inset: 0; background: var(--primary); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 1000; padding: 24px; color: white; }
+
+        .log-item { font-size: 0.8rem; padding: 6px; border-bottom: 1px dashed var(--border); font-family: monospace; display: flex; justify-content: space-between; }
+    </style>
+</head>
+<body>
+
+    <div id="login-screen">
+        <h2 style="margin-bottom: 8px;">FCA Juniores A</h2>
+        <p style="font-size: 0.85rem; color: #93c5fd; margin-bottom: 24px;">Insira a palavra-passe de acesso</p>
+        <div style="width: 100%; max-width: 280px; display: flex; flex-direction: column; gap: 12px;">
+            <input type="text" id="passInput" placeholder="Palavra-passe..." style="text-align: center; background: white;" oninput="checkPass()">
+            <p style="text-align: center; font-size: 0.7rem; color: #93c5fd;">A autenticar automaticamente...</p>
+        </div>
+    </div>
+
+    <header>
+        <div>PAINEL TÁTICO & JOGO</div>
+        <div class="sync-badge" id="sync-status" style="display:none;">⚡ Sincronizado Live Firestore</div>
+    </header>
+
+    <div class="container">
+
+        <div id="config" class="section active">
+            <div class="card">
+                <h3>Dados do Confronto</h3>
+                <div class="form-group">
+                    <label>Nome do Torneio/Competição</label>
+                    <input type="text" id="game-name" onchange="sync()">
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;" class="form-group">
+                    <div>
+                        <label>Data</label>
+                        <input type="date" id="game-date" onchange="sync()">
+                    </div>
+                    <div>
+                        <label>Hora de Jogo</label>
+                        <input type="time" id="game-time" onchange="sync()">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Pavilhão Local do Jogo</label>
+                    <select id="pavilion-select" onchange="toggleOtherPavilion()">
+                        <option value="ES ALCAIDES FARIA">ES Alcaides Faria (Barcelos)</option>
+                        <option value="PAV. MUNICIPAL DE BARCELOS">Pavilhão Municipal de Barcelos</option>
+                        <option value="outro">Outro Local... (Escrever abaixo)</option>
+                    </select>
+                    <input type="text" id="other-pavilion" placeholder="Nome do pavilhão alternativo..." style="margin-top:8px; display:none;" onchange="sync()">
+                </div>
+                <div class="form-group">
+                    <label>Nome do Adversário</label>
+                    <input type="text" id="adv-name" placeholder="Ex: SC BRAGA" onchange="sync()">
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>Atletas Disponíveis</h3>
+                <div style="display: grid; grid-template-columns: 60px 1fr auto; gap: 8px; margin-bottom: 16px;">
+                    <input type="text" id="new-ath-num" placeholder="Nº" pattern="[0-9]*" style="text-align: center;">
+                    <input type="text" id="new-ath-name" placeholder="Nome Completo / Apelido">
+                    <button class="btn" onclick="addAthlete()" style="padding: 10px 20px;">+</button>
+                </div>
+                <div id="athlete-list">
+                    </div>
+            </div>
+            
+            <button class="btn btn-accent" onclick="gerarMensagem()" style="margin-bottom: 20px;">📋 Copiar Convocatória Formatada</button>
+        </div>
+
+        <div id="strategy" class="section">
+            <div class="card">
+                <h3>Formações Iniciais por Set</h3>
+                <p style="font-size: 0.75rem; color: var(--muted); margin-bottom: 12px; text-align: center;">Selecione as posições de rotação inicial das jogadoras em quadra para cada set.</p>
+                <div id="sets-container">
+                    </div>
+            </div>
+        </div>
+
+        <div id="live" class="section">
+            <div class="score-board">
+                <div>
+                    <div style="font-size:0.75rem; font-weight:bold; color:var(--accent);">FCA (HOME)</div>
+                    <div style="display:flex; align-items:center; gap:8px; margin-top:6px;">
+                        <button class="btn-score-sub" onclick="removePoint('home')">-</button>
+                        <span class="score-num" id="score-home">0</span>
+                        <button class="btn-score" onclick="addPoint('home')">+</button>
+                    </div>
+                </div>
+                <div style="font-weight:900; font-size:1.2rem; color:#475569;">VS</div>
+                <div>
+                    <div style="font-size:0.75rem; font-weight:bold; color:#cbd5e1;" id="adv-label">ADV</div>
+                    <div style="display:flex; align-items:center; gap:8px; margin-top:6px;">
+                        <button class="btn-score" onclick="addPoint('away')">+</button>
+                        <span class="score-num" id="score-away">0</span>
+                        <button class="btn-score-sub" onclick="removePoint('away')">-</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card" style="text-align: center;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                    <select id="live-set-selector" style="width: auto; font-weight: bold; padding: 4px 8px;" onchange="changeSet(this.value)">
